@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
-from os.path import join, dirname
-from dotenv import load_dotenv
-import argparse
 from flask import Flask
 from flask_cors import CORS
-from src.routes import routes
 from logzero import logger
 
-# from dotenv import Dotenv
-# dotenv = Dotenv(os.path.join(os.path.dirname(__file__), ".env")) # Of course, replace by your correct path
-# os.environ.update(dotenv)
-
+from src.routes import routes
+from src.utils import utils
 
 def create_app(config=None):
     app = Flask(__name__)
@@ -28,19 +22,12 @@ def create_app(config=None):
     return app
 
 if __name__ == "__main__":
-    # Create .env file path.
-    dotenv_path = join(dirname(__file__), '.env')
+    logger.info('Starting Jarvis Robot....')
 
-    # Load file from the path.
-    load_dotenv(dotenv_path)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--port", action="store", default="8282")
-    parser.add_argument("--debug",  action="store", default=False)
-
-    args = parser.parse_args()
+    args = utils.get_env_args()
     port = int(args.port)
     debug = bool(args.debug)
     init_configs = dict(DEBUG=debug)
     app = create_app(init_configs)
+
     app.run(host="0.0.0.0", port=port)

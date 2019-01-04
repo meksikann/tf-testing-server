@@ -1,9 +1,18 @@
 # cpd-action-server
 
-Extra Action server on python3.5.2 for cpd-bot brain
+Extra Action server on python3.6 for cpd-bot brain
 
-Install:
+Start virtual env with python 3.6:
+navigate to ``cpd-action-server/virtual_env/env-36``
+start env with pythin 3.6 ``source bin/activate``
+
+
+Install dependencies:
 ``pip install requirerments.txt``
 
+
 Run dev:
-``make start-dev``
+start dev server ``make start-dev``
+
+./gactions update --action_package action.json --project jarvis-1ebfb
+
