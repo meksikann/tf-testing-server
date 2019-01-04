@@ -6,6 +6,7 @@ from logzero import logger
 from src.routes import routes
 from src.utils import utils
 
+
 def create_app(config=None):
     app = Flask(__name__)
 
@@ -20,6 +21,7 @@ def create_app(config=None):
     # init routes
     routes.init_app(app)
     return app
+
 
 if __name__ == "__main__":
     logger.info('Starting Jarvis Robot....')

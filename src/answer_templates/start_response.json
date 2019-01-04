@@ -7,7 +7,7 @@
       "input_prompt": {
         "initial_prompts": [
           {
-            "text_to_speech": "Hey there! How can I help you?"
+            "text_to_speech": "Hi. My name is Jarvis - the digital CPD assistant. I am not so good conversationalist, but can try to help you to manage some IoT stuff."
           }
         ],
         "no_input_prompts": [
