@@ -7,6 +7,10 @@ from flask_cors import CORS
 from src.routes import routes
 from logzero import logger
 
+# from dotenv import Dotenv
+# dotenv = Dotenv(os.path.join(os.path.dirname(__file__), ".env")) # Of course, replace by your correct path
+# os.environ.update(dotenv)
+
 
 def create_app(config=None):
     app = Flask(__name__)
