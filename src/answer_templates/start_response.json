@@ -7,7 +7,7 @@
       "input_prompt": {
         "initial_prompts": [
           {
-            "text_to_speech": "Hi. My name is Jarvis - the digital CPD assistant. I am not so good conversationalist, but can try to help you to manage some IoT stuff."
+            "text_to_speech": "Hi. My name is Jarvis - Serhiy's creature. I am not so good conversationalist, but can try to help you to manage some IoT stuff."
           }
         ],
         "no_input_prompts": [
