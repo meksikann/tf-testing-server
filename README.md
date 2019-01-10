@@ -16,3 +16,6 @@ start dev server ``make start-dev``
 
 ./gactions update --action_package action.json --project jarvis-1ebfb
 
+See TFLearn graph:
+Navigate to ``~/work/cpd-action-server`` RUN: ``tensorboard --logdir='tflearn_logs'``
+
