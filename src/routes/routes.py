@@ -3,6 +3,7 @@ from flask import request
 
 from src.services import action_handler
 from src.brain_processor import training
+from src.brain_processor import predictor
 
 
 def init_app(app):
@@ -24,3 +25,11 @@ def init_app(app):
         result = training.start_nlu_training()
 
         return result or 'Training finished'
+
+    @app.route('/predict', methods=['GET'])
+    def start_nlp_prediction():
+        logger.info('Start nlp prediction ....')
+        UTTERANCE = 'hey how are you?'
+
+        result = predictor.predict_intent(UTTERANCE)
+        return result
