@@ -8,8 +8,6 @@ from logzero import logger
 
 from src.brain_processor import helper
 
-nltk.download('punkt')
-
 
 def start_nlu_training():
     try:
@@ -99,7 +97,7 @@ def generate_stemmed_data(intents_patterns, stemmer):
     for intent in intents_patterns['intents']:
         #  tokenize each word in patterns
         for pattern in intent['patterns']:
-            word = nltk.word_tokenize(pattern)
+            word = helper.get_tokenized_words(pattern)
             print(f'tokenized word {pattern} into token: {word}')
 
             # add words to list - need for further vectors building
