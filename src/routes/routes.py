@@ -17,7 +17,7 @@ def init_app(app):
 
         return action_handler.handle_ga_action(body)
 
-    @app.route('/start-nlu-training', methods=['GET'])
+    @app.route('/start-nlu-training', methods=['POST'])
     def start_nlu_training():
         """made to trigger nlp training"""
 
@@ -26,10 +26,12 @@ def init_app(app):
 
         return result or 'Training finished'
 
-    @app.route('/predict', methods=['GET'])
+    @app.route('/predict', methods=['POST'])
     def start_nlp_prediction():
         logger.info('Start nlp prediction ....')
-        UTTERANCE = 'hey how are you?'
+        body = request.get_json()
+        print('utterance: ', body['utterance'])
+        utterance = body['utterance']
 
-        result = predictor.predict_intent(UTTERANCE)
+        result = predictor.predict_intent(utterance)
         return result

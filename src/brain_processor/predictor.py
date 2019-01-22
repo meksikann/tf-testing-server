@@ -2,6 +2,7 @@ from logzero import logger
 import pickle
 import json
 import numpy as np
+import random
 
 from src.brain_processor import helper
 
@@ -14,16 +15,45 @@ def predict_intent(utterance):
 
     try:
         words, intents, intents_patterns, model = get_training_data()
-
-        # todo: make words embedding, model prediction and so on ------------------>>>>>>
         vectorized_utterance = vectorize_sentence(utterance, words)
+        predictions = classify_vector(vectorized_utterance, model, intents)
 
-        print(vectorized_utterance)
+        print(predictions)
+
+        classes = intents_patterns['intents']
+
+        print(classes)
+
+        if predictions and len(predictions) > 0:
+            for cl in classes:
+                # compare with first prediction
+                if cl['tag'] == predictions[0][0]:
+                    formatted_result = random.choice(cl['responses'])
 
         return formatted_result
     except Exception as err:
         logger.error(err)
         return formatted_result
+
+
+def classify_vector(vector, model, intents):
+    NLU_TRECHHOLD = 0.25
+
+    predictions = model.predict([vector])[0]
+
+    logger.info('Predictions: ')
+    logger.info(predictions)
+    # filter out predictions lower than threshold
+
+    predictions = [[i, pred] for i, pred in enumerate(predictions) if pred > NLU_TRECHHOLD]
+
+    predictions.sort(key=lambda x: x[1], reverse=True)
+
+    predicted_list = []
+
+    for p in predictions:
+        predicted_list.append((intents[p[0]], p[1]))
+    return predicted_list
 
 
 def preprocess_sentence(sentence):
@@ -41,15 +71,14 @@ def vectorize_sentence(sentence, words):
     sentence_words = preprocess_sentence(sentence)
 
     # make bag
-    bag = [0]*len(words)
+    bag = [0] * len(words)
 
     for s_word in sentence_words:
         for idx, word in enumerate(words):
             if word == s_word:
                 bag[idx] = 1
 
-    return(np.array(bag))
-
+    return np.array(bag)
 
 
 def get_training_data():

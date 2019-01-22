@@ -5,8 +5,10 @@ import random
 import json
 import pickle
 from logzero import logger
+import os
 
 from src.brain_processor import helper
+from src.utils import utils
 
 
 def start_nlu_training():
@@ -14,19 +16,24 @@ def start_nlu_training():
         intents_patterns_path, model_dir, training_data_dir = helper.get_training_data_dirs()
         # load defined intents from json file
         intents_patterns = json.loads(open(intents_patterns_path).read())
+        model_env = os.environ.get("model_env")
 
         # generate training data with format needed to train model
         x_train, y_train, words, intents = generate_training_data(intents_patterns)
 
-        model = helper.get_dnn_model(x_train, y_train)
+        if model_env == 'tf':
+            print('Use Pure TensorFlow model: ==================>>>>>>>>>>>>>>>>>>>>>')
+        else:
+            model = helper.get_dnn_model(x_train, y_train)
 
-        model.fit(x_train, y_train, n_epoch=1000, batch_size=8, show_metric=True)
+            model.fit(x_train, y_train, n_epoch=1000, batch_size=8, show_metric=True)
 
-        model.save(model_dir)
+            model.save(model_dir)
 
-        # save data structures into file (will be used for prediction process)
-        pickle.dump({'words': words, "intents": intents, 'x_train': x_train, 'y_train': y_train},
-                    open(training_data_dir, "wb"))
+            # save data structures into file (will be used for prediction process)
+            pickle.dump({'words': words, "intents": intents, 'x_train': x_train, 'y_train': y_train},
+                        open(training_data_dir, "wb"))
+
 
         logger.info('MODEL HAS BEEN TRAINED --------------------------->>>>>>>>>>>>>>>>>>')
     except Exception as err:
