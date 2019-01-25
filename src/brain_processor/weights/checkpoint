@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/serg/work/cpd-action-server/src/brain_processor/weights/tf_weights"
+all_model_checkpoint_paths: "/home/serg/work/cpd-action-server/src/brain_processor/weights/tf_weights"

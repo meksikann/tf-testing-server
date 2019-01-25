@@ -13,17 +13,34 @@ from src.utils import utils
 
 def start_nlu_training():
     try:
-        intents_patterns_path, model_dir, training_data_dir = helper.get_training_data_dirs()
+        intents_patterns_path, model_dir, training_data_dir, model_weights_dir = helper.get_training_data_dirs()
         # load defined intents from json file
         intents_patterns = json.loads(open(intents_patterns_path).read())
         model_env = os.environ.get("model_env")
 
-        # generate training data with format needed to train model
-        x_train, y_train, words, intents = generate_training_data(intents_patterns)
-
         if model_env == 'tf':
+            x_train, y_train, classes = helper.preproces_tf_training_data(intents_patterns)
+
+            print('x_train: ', x_train)
+            print('y_train: ', y_train)
+            print('classes: ', classes)
             print('Use Pure TensorFlow model: ==================>>>>>>>>>>>>>>>>>>>>>')
+            # model = helper.get_tf_model()
+            #
+            # model.fit(
+            #     x_train,
+            #     y_train,
+            #     epochs=10,
+            #     batch_size=20,
+            #     verbose=1
+            # )
+
+            # save model weights
+            # model.save_weights(model_weights_dir)
         else:
+            # generate training data with format needed to train model
+            x_train, y_train, words, intents = generate_training_data(intents_patterns)
+
             model = helper.get_dnn_model(x_train, y_train)
 
             model.fit(x_train, y_train, n_epoch=1000, batch_size=8, show_metric=True)
@@ -57,8 +74,8 @@ def generate_training_data(intents_patterns):
     training_set = np.array(training_set)
 
     # create training X and Y lists
-    x_train = list(training_set[:, 0])
-    y_train = list(training_set[:, 1])
+    x_train = training_set[:, 0]
+    y_train = training_set[:, 1]
 
     return x_train, y_train, words, intents
 
