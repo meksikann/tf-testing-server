@@ -3,6 +3,8 @@ import pickle
 import json
 import numpy as np
 import random
+import os
+import traceback
 
 from src.brain_processor import helper
 
@@ -13,26 +15,44 @@ def predict_intent(utterance):
 
     formatted_result = 'NONE'
 
+    model_env = os.environ.get("model_env")
+
     try:
-        words, intents, intents_patterns, model = get_training_data()
-        vectorized_utterance = vectorize_sentence(utterance, words)
-        predictions = classify_vector(vectorized_utterance, model, intents)
+        if model_env == 'tf':
+            print('Using TF model for prediction --------->>>>>>>')
+            tokenized_utterance = helper.get_tokenized_utterance(utterance)
+            model = helper.get_tf_model()
+            model.load_weights('nlu_mlp_model.h5')
+            print('data to predict: ', tokenized_utterance)
+            tokenized_utterance = (np.expand_dims(tokenized_utterance, 0))
+            prediction = model.predict(tokenized_utterance, verbose=1)
 
-        print(predictions)
+            print('predicted: ', prediction)
 
-        classes = intents_patterns['intents']
+            print('shape', prediction.shape)
 
-        print(classes)
 
-        if predictions and len(predictions) > 0:
-            for cl in classes:
-                # compare with first prediction
-                if cl['tag'] == predictions[0][0]:
-                    formatted_result = random.choice(cl['responses'])
+        else:
+            words, intents, intents_patterns, model = get_training_data()
+            vectorized_utterance = vectorize_sentence(utterance, words)
+            predictions = classify_vector(vectorized_utterance, model, intents)
+
+            print('predictions ', predictions)
+
+            classes = intents_patterns['intents']
+
+            # print(classes)
+
+            if predictions and len(predictions) > 0:
+                for cl in classes:
+                    # compare with first prediction
+                    if cl['tag'] == predictions[0][0]:
+                        formatted_result = random.choice(cl['responses'])
 
         return formatted_result
     except Exception as err:
         logger.error(err)
+        traceback.print_exc()
         return formatted_result
 
 
@@ -83,7 +103,7 @@ def vectorize_sentence(sentence, words):
 
 def get_training_data():
     """get data saved during training process"""
-    intents_patterns_path, model_dir, training_data_dir = helper.get_training_data_dirs()
+    intents_patterns_path, model_dir, training_data_dir, tf_training_data_dir, model_weights_dir = helper.get_training_data_dirs()
     try:
         # load training data to process words
         data = pickle.load(open(training_data_dir, 'rb'))

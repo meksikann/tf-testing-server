@@ -3,6 +3,7 @@ import tensorflow as tf
 import random
 import nltk
 import numpy as np
+import pickle
 
 from os.path import join, dirname
 from nltk.stem.lancaster import LancasterStemmer
@@ -35,7 +36,7 @@ def preprocess_labels(labels, classes):
     for label in labels:
         y_train.append(classes.index(label))
 
-    return y_train
+    return np.array(y_train)
 
 
 def preproces_tf_training_data(data):
@@ -71,8 +72,26 @@ def preproces_tf_training_data(data):
     # generate labels as numbers (classes)
     y_train = preprocess_labels(training_data[:, 1], classes)
 
-    return x_train, y_train, classes
+    return x_train, y_train, classes, tokenizer.word_index
 
+
+def get_tokenized_utterance(utterance):
+    tokenizer = text.Tokenizer(num_words=100000)
+
+    tokenizer.word_index = get_tokens_dict()
+    print(tokenizer.word_index)
+
+    sequence = tokenizer.texts_to_sequences([utterance])
+
+    return sequence[0]
+
+
+def get_tokens_dict():
+    tf_training_data_dir = join(dirname(__file__), 'tf_training_data')
+    data = pickle.load(open(tf_training_data_dir, 'rb'))
+    word_index = data['words_indexes']
+
+    return word_index
 
 def get_tokenized_words(sentence):
     return nltk.word_tokenize(sentence)
@@ -87,15 +106,16 @@ def stem_data(words):
 
 def get_tf_model():
     print('TF version:', tf.__version__)
+    VOCAB_SIZE = 10000
 
     # decided to choose sequentialy stacked layers
     model = keras.Sequential()
-    model.add(keras.layers.Embedding(20, 8))
+    model.add(keras.layers.Embedding(VOCAB_SIZE, 16))
     model.add(keras.layers.GlobalAveragePooling1D())
-    model.add(keras.layers.Dense(8, activation=tf.nn.relu))
+    model.add(keras.layers.Dense(16, activation=tf.nn.relu))
     model.add(keras.layers.Dense(1, activation=tf.nn.sigmoid))
 
-    model.summary()
+    # model.summary()
 
     model.compile(
         optimizer='adam',
@@ -127,6 +147,7 @@ def get_training_data_dirs():
     intents_patterns_path = join(dirname(__file__), 'intents.json')
     model_dir = join(dirname(__file__), '../trained_models/model_1.tflearn')
     training_data_dir = join(dirname(__file__), 'training_data')
+    tf_training_data_dir = join(dirname(__file__), 'tf_training_data')
     model_weights_dir = join(dirname(__file__), 'weights/tf_weights')
 
-    return intents_patterns_path, model_dir, training_data_dir, model_weights_dir
+    return intents_patterns_path, model_dir, training_data_dir, tf_training_data_dir, model_weights_dir

@@ -6,6 +6,7 @@ import json
 import pickle
 from logzero import logger
 import os
+import traceback
 
 from src.brain_processor import helper
 from src.utils import utils
@@ -13,30 +14,34 @@ from src.utils import utils
 
 def start_nlu_training():
     try:
-        intents_patterns_path, model_dir, training_data_dir, model_weights_dir = helper.get_training_data_dirs()
+        intents_patterns_path, model_dir, training_data_dir, tf_training_data_dir, model_weights_dir = helper.get_training_data_dirs()
         # load defined intents from json file
         intents_patterns = json.loads(open(intents_patterns_path).read())
         model_env = os.environ.get("model_env")
 
         if model_env == 'tf':
-            x_train, y_train, classes = helper.preproces_tf_training_data(intents_patterns)
+            x_train, y_train, classes, word_indexes = helper.preproces_tf_training_data(intents_patterns)
 
             print('x_train: ', x_train)
             print('y_train: ', y_train)
-            print('classes: ', classes)
+            # print('classes: ', classes)
+
             print('Use Pure TensorFlow model: ==================>>>>>>>>>>>>>>>>>>>>>')
-            # model = helper.get_tf_model()
-            #
-            # model.fit(
-            #     x_train,
-            #     y_train,
-            #     epochs=10,
-            #     batch_size=20,
-            #     verbose=1
-            # )
+            model = helper.get_tf_model()
+
+            model.fit(x_train,
+                      y_train,
+                      epochs=1000,
+                      batch_size=10,
+                      verbose=1
+            )
 
             # save model weights
-            # model.save_weights(model_weights_dir)
+            model.save('nlu_mlp_model.h5')
+            # save data structures into file (will be used for prediction process)
+            pickle.dump({'words_indexes': word_indexes, "classes": classes, 'x_train': x_train, 'y_train': y_train},
+                        open(tf_training_data_dir, "wb"))
+            logger.info('Training data saved')
         else:
             # generate training data with format needed to train model
             x_train, y_train, words, intents = generate_training_data(intents_patterns)
@@ -51,10 +56,11 @@ def start_nlu_training():
             pickle.dump({'words': words, "intents": intents, 'x_train': x_train, 'y_train': y_train},
                         open(training_data_dir, "wb"))
 
-
         logger.info('MODEL HAS BEEN TRAINED --------------------------->>>>>>>>>>>>>>>>>>')
     except Exception as err:
         logger.error('Error while model training', err)
+
+        traceback.print_exc()
 
 
 def generate_training_data(intents_patterns):
