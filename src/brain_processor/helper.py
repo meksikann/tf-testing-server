@@ -130,8 +130,10 @@ def get_tf_model(length):
     print('TF version:', tf.__version__)
 
     model = keras.Sequential()
-    model.add(keras.layers.Dense(16, activation=tf.nn.relu, input_dim=10))
-    # model.add(keras.layers.Dense(128, activation=tf.nn.relu))
+    model.add(keras.layers.Dense(32, activation=tf.nn.relu, input_dim=10))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Dense(32, activation=tf.nn.relu))
+    model.add(keras.layers.Dropout(0.5))
     model.add(keras.layers.Dense(3, activation=tf.nn.softmax))
 
 
