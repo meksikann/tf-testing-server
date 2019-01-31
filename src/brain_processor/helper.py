@@ -15,6 +15,8 @@ nltk.download('punkt')
 
 
 # tf.enable_eager_execution()
+MAX_LENGTH = 10
+NORMALIZE_NUM = 50
 
 
 def parse_training_data(data):
@@ -33,10 +35,13 @@ def parse_training_data(data):
 
 def preprocess_labels(labels, classes):
     y_train = []
-    for label in labels:
-        y_train.append(classes.index(label))
 
-    return np.array(y_train)
+    for label in labels:
+        y_train.append([classes.index(label)])
+
+    one_hot_labels = keras.utils.to_categorical(np.array(y_train), num_classes=len(classes))
+
+    return one_hot_labels
 
 
 def preproces_tf_training_data(data):
@@ -49,7 +54,8 @@ def preproces_tf_training_data(data):
 
     # get training data from JSON, shuffle it and make numpy array
     training_data, classes = parse_training_data(data)
-    random.shuffle(training_data)
+
+    # random.shuffle(training_data)
     training_data = np.array(training_data)
 
     # init tokenizer
@@ -58,6 +64,7 @@ def preproces_tf_training_data(data):
     # vocabluary with training texts (tokenized) and vectorize training text
     texts = training_data[:, 0]
     tokenizer.fit_on_texts(texts)
+
     x_train = tokenizer.texts_to_sequences(texts)
 
     # get max sequence length
@@ -67,7 +74,8 @@ def preproces_tf_training_data(data):
         max_length = MAX_LENGTH
 
     # pad sequences to same length
-    x_train = sequence.pad_sequences(x_train, max_length)
+    x_train = sequence.pad_sequences(x_train, 10)
+    x_train = x_train / NORMALIZE_NUM
 
     # generate labels as numbers (classes)
     y_train = preprocess_labels(training_data[:, 1], classes)
@@ -75,15 +83,19 @@ def preproces_tf_training_data(data):
     return x_train, y_train, classes, tokenizer.word_index
 
 
+
 def get_tokenized_utterance(utterance):
-    tokenizer = text.Tokenizer(num_words=100000)
+    tokenizer = text.Tokenizer()
 
     tokenizer.word_index = get_tokens_dict()
+
     print(tokenizer.word_index)
 
-    sequence = tokenizer.texts_to_sequences([utterance])
+    x_train = tokenizer.texts_to_sequences([utterance])
+    x_train = sequence.pad_sequences(x_train, 10)
+    x_train = x_train / NORMALIZE_NUM
 
-    return sequence[0]
+    return x_train[0]
 
 
 def get_tokens_dict():
@@ -92,6 +104,15 @@ def get_tokens_dict():
     word_index = data['words_indexes']
 
     return word_index
+
+
+def get_tf_classes():
+    tf_training_data_dir = join(dirname(__file__), 'tf_training_data')
+    data = pickle.load(open(tf_training_data_dir, 'rb'))
+    classes = data['classes']
+
+    return classes
+
 
 def get_tokenized_words(sentence):
     return nltk.word_tokenize(sentence)
@@ -103,23 +124,28 @@ def stem_data(words):
 
     return stemmed_words
 
-
-def get_tf_model():
+def get_tf_model(length):
+    tf.reset_default_graph()
     print('TF version:', tf.__version__)
-    VOCAB_SIZE = 10000
+    # VOCAB_SIZE = 10000
 
     # decided to choose sequentialy stacked layers
-    model = keras.Sequential()
-    model.add(keras.layers.Embedding(VOCAB_SIZE, 16))
-    model.add(keras.layers.GlobalAveragePooling1D())
-    model.add(keras.layers.Dense(16, activation=tf.nn.relu))
-    model.add(keras.layers.Dense(1, activation=tf.nn.sigmoid))
+    # model = keras.Sequential()
+    # model.add(keras.layers.Embedding(VOCAB_SIZE, 16))
+    # model.add(keras.layers.GlobalAveragePooling1D())
+    # model.add(keras.layers.Dense(16, activation=tf.nn.relu))
+    # model.add(keras.layers.Dense(1, activation=tf.nn.sigmoid))
 
-    # model.summary()
+    model = keras.Sequential()
+    model.add(keras.layers.Dense(16, activation=tf.nn.relu, input_dim=10))
+    model.add(keras.layers.Dense(128, activation=tf.nn.relu))
+    model.add(keras.layers.Dense(3, activation=tf.nn.softmax))
+
+    model.summary()
 
     model.compile(
         optimizer='adam',
-        loss='binary_crossentropy',
+        loss='categorical_crossentropy',
         metrics=['accuracy']
     )
 

@@ -24,15 +24,13 @@ def start_nlu_training():
 
             print('x_train: ', x_train)
             print('y_train: ', y_train)
-            # print('classes: ', classes)
-
+            print('classes: ', classes)
             print('Use Pure TensorFlow model: ==================>>>>>>>>>>>>>>>>>>>>>')
-            model = helper.get_tf_model()
+            model = helper.get_tf_model(len(x_train[0]))
 
             model.fit(x_train,
                       y_train,
-                      epochs=1000,
-                      batch_size=10,
+                      epochs=100,
                       verbose=1
             )
 
@@ -45,10 +43,12 @@ def start_nlu_training():
         else:
             # generate training data with format needed to train model
             x_train, y_train, words, intents = generate_training_data(intents_patterns)
+            print(x_train)
+            print(y_train)
 
             model = helper.get_dnn_model(x_train, y_train)
 
-            model.fit(x_train, y_train, n_epoch=1000, batch_size=8, show_metric=True)
+            model.fit(x_train, y_train, n_epoch=100, show_metric=True)
 
             model.save(model_dir)
 
@@ -80,8 +80,8 @@ def generate_training_data(intents_patterns):
     training_set = np.array(training_set)
 
     # create training X and Y lists
-    x_train = training_set[:, 0]
-    y_train = training_set[:, 1]
+    x_train = list(training_set[:, 0])
+    y_train = list(training_set[:, 1])
 
     return x_train, y_train, words, intents
 

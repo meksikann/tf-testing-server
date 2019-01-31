@@ -26,6 +26,8 @@ def base_classification():
     # display images to see if it's OK
     # display_images(train_x, train_y, class_names)
 
+    print('train_y', train_y)
+
     model = keras.Sequential([
         keras.layers.Flatten(input_shape=(28, 28)),  # just transforms 2 dimentional array to one dimentional 28*28=784
         keras.layers.Dense(128, activation=tf.nn.relu),  # normal dense layer with 128 neurons

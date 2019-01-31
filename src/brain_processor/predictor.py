@@ -21,17 +21,21 @@ def predict_intent(utterance):
         if model_env == 'tf':
             print('Using TF model for prediction --------->>>>>>>')
             tokenized_utterance = helper.get_tokenized_utterance(utterance)
-            model = helper.get_tf_model()
+            print('Predict X length:', len(tokenized_utterance))
+            model = helper.get_tf_model(len(tokenized_utterance))
             model.load_weights('nlu_mlp_model.h5')
             print('data to predict: ', tokenized_utterance)
             tokenized_utterance = (np.expand_dims(tokenized_utterance, 0))
             prediction = model.predict(tokenized_utterance, verbose=1)
+            classes = helper.get_tf_classes()
 
+            print('classes ', classes)
             print('predicted: ', prediction)
-
             print('shape', prediction.shape)
 
-
+            for pred in prediction:
+                score = np.argmax(pred)
+                print(f'Index: {score}, Class is: {classes[score]}')
         else:
             words, intents, intents_patterns, model = get_training_data()
             vectorized_utterance = vectorize_sentence(utterance, words)
@@ -58,6 +62,7 @@ def predict_intent(utterance):
 
 def classify_vector(vector, model, intents):
     NLU_TRECHHOLD = 0.25
+    print('vector', vector)
 
     predictions = model.predict([vector])[0]
 
