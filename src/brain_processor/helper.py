@@ -89,13 +89,14 @@ def get_tokenized_utterance(utterance):
 
     tokenizer.word_index = get_tokens_dict()
 
-    print(tokenizer.word_index)
+    print('word index',tokenizer.word_index)
 
     x_train = tokenizer.texts_to_sequences([utterance])
     x_train = sequence.pad_sequences(x_train, 10)
+    print('before normalization', x_train)
     x_train = x_train / NORMALIZE_NUM
 
-    return x_train[0]
+    return x_train
 
 
 def get_tokens_dict():
@@ -127,19 +128,12 @@ def stem_data(words):
 def get_tf_model(length):
     tf.reset_default_graph()
     print('TF version:', tf.__version__)
-    # VOCAB_SIZE = 10000
-
-    # decided to choose sequentialy stacked layers
-    # model = keras.Sequential()
-    # model.add(keras.layers.Embedding(VOCAB_SIZE, 16))
-    # model.add(keras.layers.GlobalAveragePooling1D())
-    # model.add(keras.layers.Dense(16, activation=tf.nn.relu))
-    # model.add(keras.layers.Dense(1, activation=tf.nn.sigmoid))
 
     model = keras.Sequential()
     model.add(keras.layers.Dense(16, activation=tf.nn.relu, input_dim=10))
-    model.add(keras.layers.Dense(128, activation=tf.nn.relu))
+    # model.add(keras.layers.Dense(128, activation=tf.nn.relu))
     model.add(keras.layers.Dense(3, activation=tf.nn.softmax))
+
 
     model.summary()
 

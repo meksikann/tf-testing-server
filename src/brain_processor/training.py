@@ -21,16 +21,17 @@ def start_nlu_training():
 
         if model_env == 'tf':
             x_train, y_train, classes, word_indexes = helper.preproces_tf_training_data(intents_patterns)
+            print('word_indexes',word_indexes)
 
             print('x_train: ', x_train)
             print('y_train: ', y_train)
             print('classes: ', classes)
-            print('Use Pure TensorFlow model: ==================>>>>>>>>>>>>>>>>>>>>>')
+            # print('Use Pure TensorFlow model: ==================>>>>>>>>>>>>>>>>>>>>>')
             model = helper.get_tf_model(len(x_train[0]))
 
             model.fit(x_train,
                       y_train,
-                      epochs=100,
+                      epochs=1000,
                       verbose=1
             )
 
@@ -43,8 +44,6 @@ def start_nlu_training():
         else:
             # generate training data with format needed to train model
             x_train, y_train, words, intents = generate_training_data(intents_patterns)
-            print(x_train)
-            print(y_train)
 
             model = helper.get_dnn_model(x_train, y_train)
 

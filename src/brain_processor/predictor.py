@@ -24,14 +24,14 @@ def predict_intent(utterance):
             print('Predict X length:', len(tokenized_utterance))
             model = helper.get_tf_model(len(tokenized_utterance))
             model.load_weights('nlu_mlp_model.h5')
-            print('data to predict: ', tokenized_utterance)
-            tokenized_utterance = (np.expand_dims(tokenized_utterance, 0))
+            # tokenized_utterance = (np.expand_dims(tokenized_utterance, 0))
+            print('last:', tokenized_utterance)
             prediction = model.predict(tokenized_utterance, verbose=1)
             classes = helper.get_tf_classes()
 
-            print('classes ', classes)
-            print('predicted: ', prediction)
-            print('shape', prediction.shape)
+            # print('classes ', classes)
+            # print('predicted: ', prediction)
+            # print('shape', prediction.shape)
 
             for pred in prediction:
                 score = np.argmax(pred)

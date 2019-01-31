@@ -22,7 +22,6 @@ def create_app(config=None):
     routes.init_app(app)
     return app
 
-
 if __name__ == "__main__":
     logger.info('Starting Jarvis Robot....')
 

@@ -19,9 +19,12 @@
     {
       "tag": "goodbye",
       "patterns": [
-        "Bye",
+        "bye",
         "See you later",
-        "Goodbye"
+        "Goodbye",
+        "well good bye",
+        "have a nice day",
+        "bye bye"
       ],
       "responses": [
         "See you later, thanks for visiting",
@@ -34,7 +37,10 @@
       "patterns": [
         "Thanks",
         "Thank you",
-        "That's helpful"
+        "That's helpful",
+        "good",
+        "great",
+        "this is super cool"
       ],
       "responses": [
         "Happy to help!",
