@@ -126,7 +126,7 @@ def stem_data(words):
     return stemmed_words
 
 def get_tf_model(length):
-    tf.reset_default_graph()
+    keras.backend.clear_session()
     print('TF version:', tf.__version__)
 
     model = keras.Sequential()

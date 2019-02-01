@@ -31,7 +31,7 @@ def start_nlu_training():
 
             model.fit(x_train,
                       y_train,
-                      epochs=100,
+                      epochs=1000,
                       verbose=1
             )
 
