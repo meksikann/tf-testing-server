@@ -128,3 +128,9 @@ def get_training_data():
     except Exception as err:
         logger.error(err)
         raise Exception('Error while getting training data')
+
+
+def get_spam_result(utterance):
+    print(utterance)
+    check_result = 'test 1'
+    return check_result

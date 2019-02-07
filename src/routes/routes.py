@@ -1,5 +1,6 @@
 from logzero import logger
 from flask import request
+import traceback
 
 from src.services import action_handler
 from src.brain_processor import training
@@ -34,4 +35,30 @@ def init_app(app):
         utterance = body['utterance']
 
         result = predictor.predict_intent(utterance)
+        return result
+
+    @app.route('/spam-test', methods=['POST'])
+    def check_for_spam():
+        logger.info('Star SPAM check ... ... ...')
+
+        body = request.get_json()
+        result = predictor.get_spam_result(body['utterance'])
+
+        return result
+
+    @app.route('/glove-embeding', methods=['POST'])
+    def embed_glove():
+        result = None
+
+        try:
+            logger.log('Start building model with GLOVE embedding')
+
+            custom_nlu_embed_model()
+
+            result = 'Model has been trained with GLOVE emebedding'
+        except Exception as err:
+            result = 'Error ocured during processing'
+            logger.error(err)
+            traceback.print_exc()
+
         return result

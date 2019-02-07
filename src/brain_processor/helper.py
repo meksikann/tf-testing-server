@@ -44,8 +44,8 @@ def preprocess_labels(labels, classes):
     return one_hot_labels
 
 
-def preproces_tf_training_data(data):
     """receives JSON  data for training. Returns x_train. y_train vectorized data and classes(intents)"""
+def preproces_tf_training_data(data):
 
     # max features for tokenizer
     MAX_FEATURES = 10000
