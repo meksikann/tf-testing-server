@@ -173,3 +173,23 @@ def get_training_data_dirs():
     model_weights_dir = join(dirname(__file__), 'weights/tf_weights')
 
     return intents_patterns_path, model_dir, training_data_dir, tf_training_data_dir, model_weights_dir
+
+
+def build_model(vocab_size, embed_dimention, rnn_units, batch_size):
+    if tf.test.is_gpu_available():
+        print('GPU is available')
+        rnn = tf.keras.layers.CuDNNGRU
+    else:
+        print('GPU is not available')
+        import functools
+        rnn = functools.partial(tf.keras.layers.GRU, recurrent_activation='sigmoid')
+
+    model = tf.keras.Sequential([
+        tf.keras.layers.Embedding(vocab_size, embed_dimention, batch_input_shape=[batch_size, None]),
+        rnn(rnn_units,
+            return_sequences=True,
+            recurrent_initializer='glorot_uniform',
+            stateful=True),
+        tf.keras.layers.Dense(vocab_size)
+    ])
+    return model
