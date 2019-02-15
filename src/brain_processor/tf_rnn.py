@@ -24,14 +24,14 @@ def generate_input_target(batch):
 # file_path = '/home/serg/.keras/datasets/shakespeare.txt'
 
 
-file_path = join(dirname(__file__),'book_dataset_rnn.txt')
-print(file_path)
+file_path = join(dirname(__file__),'republic.txt')
+
 
 text = open(file_path, 'rb').read().decode(encoding='utf-8')
 
 # get vocab of unique chars /case sensitive/
 characters_vocab = sorted(set(text))
-
+print(characters_vocab)
 # create two hashes  'char->int' and 'int->char'
 char_to_idx = {u: i for i, u in enumerate(characters_vocab)}
 idx_to_char = np.array(characters_vocab)
@@ -100,7 +100,7 @@ checkpoint_callback=tf.keras.callbacks.ModelCheckpoint(
 
 
 def generate_text(string):
-    generate_num = 10000
+    generate_num = 100
     generated_text = []
     temperature = 1.0
 
@@ -132,7 +132,7 @@ def generate_text(string):
     return string + ''.join(generated_text)
 
 
-print(generate_text(string="Neural network models are a preferred method for developing statistical language models because they can use a distributed representation where different words with similar meanings have similar representation and because they can use a large context of recently observed words when making predictions"))
+print(generate_text(string="Neural network models"))
 
 
 
