@@ -57,7 +57,9 @@ def create_model(net_units, vocab_size, sequence_length):
     model = keras.Sequential()
     model.add(keras.layers.Embedding(vocab_size, 50, input_length=sequence_length))
     model.add(keras.layers.LSTM(net_units, return_sequences=True))
+    model.add(keras.layers.Dropout(0.5))
     model.add(keras.layers.LSTM(net_units))
+    model.add(keras.layers.Dropout(0.5))
     model.add(keras.layers.Dense(net_units, activation='relu'))
     model.add(keras.layers.Dense(vocab_size, activation='softmax'))
 
@@ -147,7 +149,7 @@ def generate_string(tk, model, seq_length, input_string, output_length):
 
 def start_prediction(input_string):
     filename = 'republic_seq.txt'
-    output_length = 100
+    output_length = 10000
 
     doc = load_txt_doc(join(dirname(__file__), filename))
     lines = doc.split('\n')
@@ -163,4 +165,4 @@ def start_prediction(input_string):
 
 
 # start_training()
-start_prediction('his name  and got it')
+start_prediction('his name and got it')
